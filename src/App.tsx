@@ -100,11 +100,9 @@ const TabsPage = () => {
 
           {tabs.map(tab => (
             <TabPanel key={tab.id}>
-              {tab.id === tabId && (
-                <div className="block" data-cy="TabContent">
-                  {tab.content}
-                </div>
-              )}
+              <div className="block" data-cy="TabContent">
+                {tab.content}
+              </div>
             </TabPanel>
           ))}
         </Tabs>
