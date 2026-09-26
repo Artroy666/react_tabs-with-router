@@ -11,10 +11,24 @@ import {
   useParams,
 } from 'react-router-dom';
 
+import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
+
 const tabs = [
-  { id: 'tab-1', title: 'Tab 1', content: 'Some text 1' },
-  { id: 'tab-2', title: 'Tab 2', content: 'Some text 2' },
-  { id: 'tab-3', title: 'Tab 3', content: 'Some text 3' },
+  {
+    id: 'tab-1',
+    title: 'Tab 1',
+    content: 'Some text 1',
+  },
+  {
+    id: 'tab-2',
+    title: 'Tab 2',
+    content: 'Some text 2',
+  },
+  {
+    id: 'tab-3',
+    title: 'Tab 3',
+    content: 'Some text 3',
+  },
 ];
 
 const Navigation = () => {
@@ -49,69 +63,89 @@ const Navigation = () => {
   );
 };
 
-const HomePage = () => (
-  <div className="section">
-    <div className="container">
-      <h1 className="title">Home page</h1>
+const HomePage = () => {
+  return (
+    <div className="section">
+      <div className="container">
+        <h1 className="title">Home page</h1>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const TabsPage = () => {
   const { tabId } = useParams();
 
-  const selectedTab = tabs.find(tab => tab.id === tabId);
+  const selectedTabIndex = tabs.findIndex(tab => tab.id === tabId);
+  const isValidTab = selectedTabIndex !== -1;
 
   return (
     <div className="section">
       <div className="container">
         <h1 className="title">Tabs page</h1>
 
-        <div className="tabs is-boxed">
-          <ul>
+        <Tabs
+          selectedIndex={isValidTab ? selectedTabIndex : -1}
+          selectedTabClassName="is-active"
+        >
+          <TabList>
             {tabs.map(tab => (
-              <li
-                key={tab.id}
-                data-cy="Tab"
-                className={tab.id === tabId ? 'is-active' : ''}
-              >
-                <Link to={`/tabs/${tab.id}`}>{tab.title}</Link>
-              </li>
+              <Tab key={tab.id} data-cy="Tab">
+                <Link to={`/tabs/${tab.id}`} className="tab-link">
+                  {tab.title}
+                </Link>
+              </Tab>
             ))}
-          </ul>
-        </div>
+          </TabList>
 
-        <div className="block" data-cy="TabContent">
-          {selectedTab ? selectedTab.content : 'Please select a tab'}
-        </div>
+          {tabs.map(tab => (
+            <TabPanel key={tab.id}>
+              {tab.id === tabId && (
+                <div className="block" data-cy="TabContent">
+                  {tab.content}
+                </div>
+              )}
+            </TabPanel>
+          ))}
+        </Tabs>
+
+        {!isValidTab && (
+          <div className="block" data-cy="TabContent">
+            Please select a tab
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-const NotFoundPage = () => (
-  <div className="section">
-    <div className="container">
-      <h1 className="title">Page not found</h1>
+const NotFoundPage = () => {
+  return (
+    <div className="section">
+      <div className="container">
+        <h1 className="title">Page not found</h1>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
-export const App = () => (
-  <>
-    <Navigation />
+export const App = () => {
+  return (
+    <>
+      <Navigation />
 
-    <Routes>
-      <Route path="/" element={<HomePage />} />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
 
-      <Route path="tabs">
-        <Route index element={<TabsPage />} />
-        <Route path=":tabId" element={<TabsPage />} />
-      </Route>
+        <Route path="tabs">
+          <Route index element={<TabsPage />} />
+          <Route path=":tabId" element={<TabsPage />} />
+        </Route>
 
-      <Route path="/home" element={<Navigate to="/" replace />} />
+        <Route path="/home" element={<Navigate to="/" replace />} />
 
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
-  </>
-);
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </>
+  );
+};
